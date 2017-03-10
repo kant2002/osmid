@@ -175,29 +175,38 @@ namespace CoreMidiHelpers
         return result;
     }
 
+
     static StringArray findDevices (const bool forInput)
     {
         // It seems that OSX can be a bit picky about the thread that's first used to
         // search for devices. It's safest to use the message thread for calling this.
         jassert (MessageManager::getInstance()->isThisTheMessageThread());
 
-        const ItemCount num = forInput ? MIDIGetNumberOfSources()
-                                       : MIDIGetNumberOfDestinations();
         StringArray s;
 
-        for (ItemCount i = 0; i < num; ++i)
+        if(getGlobalMidiClient())
         {
-            MIDIEndpointRef dest = forInput ? MIDIGetSource (i)
-                                            : MIDIGetDestination (i);
-            String name;
+            const ItemCount num = forInput ? MIDIGetNumberOfSources()
+                                        : MIDIGetNumberOfDestinations();
+                                    
+            for (ItemCount i = 0; i < num; ++i)
+            {
+                MIDIEndpointRef dest = forInput ? MIDIGetSource (i)
+                                                : MIDIGetDestination (i);
+                String name;
 
-            if (dest != 0)
+                if (dest != 0)
                 name = getConnectedEndpointName (dest);
 
-            if (name.isEmpty())
-                name = "<error>";
-
-            s.add (name);
+                if (name.isEmpty())
+                    name = "<error>";
+                s.add (name);
+            }
+        }
+        else
+        {
+            jassertfalse;
+            s.add("<error>");
         }
 
         return s;
