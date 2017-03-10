@@ -175,43 +175,6 @@ namespace CoreMidiHelpers
         return result;
     }
 
-
-    static StringArray findDevices (const bool forInput)
-    {
-        // It seems that OSX can be a bit picky about the thread that's first used to
-        // search for devices. It's safest to use the message thread for calling this.
-        jassert (MessageManager::getInstance()->isThisTheMessageThread());
-
-        StringArray s;
-
-        if(getGlobalMidiClient())
-        {
-            const ItemCount num = forInput ? MIDIGetNumberOfSources()
-                                        : MIDIGetNumberOfDestinations();
-                                    
-            for (ItemCount i = 0; i < num; ++i)
-            {
-                MIDIEndpointRef dest = forInput ? MIDIGetSource (i)
-                                                : MIDIGetDestination (i);
-                String name;
-
-                if (dest != 0)
-                name = getConnectedEndpointName (dest);
-
-                if (name.isEmpty())
-                    name = "<error>";
-                s.add (name);
-            }
-        }
-        else
-        {
-            jassertfalse;
-            s.add("<error>");
-        }
-
-        return s;
-    }
-
     static void globalSystemChangeCallback (const MIDINotification*, void*)
     {
         // TODO.. Should pass-on this notification..
@@ -250,6 +213,43 @@ namespace CoreMidiHelpers
 
         return globalMidiClient;
     }
+
+    static StringArray findDevices (const bool forInput)
+    {
+        // It seems that OSX can be a bit picky about the thread that's first used to
+        // search for devices. It's safest to use the message thread for calling this.
+        jassert (MessageManager::getInstance()->isThisTheMessageThread());
+
+        StringArray s;
+
+        if(getGlobalMidiClient())
+        {
+            const ItemCount num = forInput ? MIDIGetNumberOfSources()
+                                        : MIDIGetNumberOfDestinations();
+                                    
+            for (ItemCount i = 0; i < num; ++i)
+            {
+                MIDIEndpointRef dest = forInput ? MIDIGetSource (i)
+                                                : MIDIGetDestination (i);
+                String name;
+
+                if (dest != 0)
+                name = getConnectedEndpointName (dest);
+
+                if (name.isEmpty())
+                    name = "<error>";
+                s.add (name);
+            }
+        }
+        else
+        {
+            jassertfalse;
+            s.add("<error>");
+        }
+
+        return s;
+    }
+
 
     //==============================================================================
     class MidiPortAndEndpoint
