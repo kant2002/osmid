@@ -92,6 +92,7 @@ elseif(UNIX)
     add_definitions(-DLINUX=1 -DNDEBUG=1 -DJUCER_LINUX_MAKE_6D53C8B4=1 -DJUCE_APP_VERSION=1.0.0 -DJUCE_APP_VERSION_HEX=0x10000)
     target_link_libraries(m2o pthread ${ALSA_LIBRARY} dl rt X11)
     target_link_libraries(o2m pthread ${ALSA_LIBRARY} dl rt X11)
+    target_link_libraries(mac_midi_reproducer pthread ${ALSA_LIBRARY} dl rt X11)
 endif(MSVC)
 
 if(UNIX)
